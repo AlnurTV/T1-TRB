@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 1000
+
+struct Pilha {
+    char itens[MAX];
+    int topo;
+};
+
+void inicializar(struct Pilha* p) {
+    p->topo = -1;
+}
+
+int esta_vazia(struct Pilha* p) {
+    return p->topo == -1;
+}
+
+int esta_cheia(struct Pilha* p) {
+    return p->topo == MAX - 1;
+}
+
+void push(struct Pilha* p, char c) {
+    if (esta_cheia(p)) {
+        printf("Erro: pilha cheia.\n");
+        exit(1);
+    }
+    p->itens[++(p->topo)] = c;
+}
+
+char pop(struct Pilha* p) {
+    if (esta_vazia(p)) {
+        printf("Erro: pilha vazia.\n");
+        exit(1);
+    }
+    return p->itens[(p->topo)--];
+}
+
+void inverter_string(const char* original, char* invertida) {
+    struct Pilha p;
+    inicializar(&p);
+
+    int len = strlen(original);
+    for (int i = 0; i < len; i++) {
+        push(&p, original[i]);
+    }
+
+    int i = 0;
+    while (!esta_vazia(&p)) {
+        invertida[i++] = pop(&p);
+    }
+    invertida[i] = '\0';
+}
+
+int main() {
+    char str[] = "hello";
+    char invertida[MAX];
+
+    inverter_string(str, invertida);
+    printf("Original: %s\n", str);
+    printf("Invertida: %s\n", invertida);
+
+    return 0;
+}
