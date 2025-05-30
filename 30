@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int *dados;
+    int topo;
+    int capacidade;
+} Pilha;
+
+Pilha* criar_pilha(int capacidade) {
+    Pilha* p = (Pilha*) malloc(sizeof(Pilha));
+    p->dados = (int*) malloc(capacidade * sizeof(int));
+    p->topo = -1;
+    p->capacidade = capacidade;
+    return p;
+}
+
+int esta_vazia(Pilha* p) {
+    return p->topo == -1;
+}
+
+void push(Pilha* p, int valor) {
+    if (p->topo == p->capacidade - 1) {
+        printf("Erro: pilha cheia\n");
+        exit(1);
+    }
+    p->dados[++p->topo] = valor;
+}
+
+int pop(Pilha* p) {
+    if (esta_vazia(p)) {
+        printf("Erro: pilha vazia\n");
+        exit(1);
+    }
+    return p->dados[p->topo--];
+}
+
+int topo(Pilha* p) {
+    if (esta_vazia(p)) {
+        printf("Erro: pilha vazia\n");
+        exit(1);
+    }
+    return p->dados[p->topo];
+}
+
+int trap(int* altura, int n) {
+    Pilha* p = criar_pilha(n);
+    int res = 0, i = 0;
+
+    while (i < n) {
+        while (!esta_vazia(p) && altura[i] > altura[topo(p)]) {
+            int topo_atual = pop(p);
+            if (esta_vazia(p))
+                break;
+            int distancia = i - topo(p) - 1;
+            int altura_limite = (altura[i] < altura[topo(p)]) ? altura[i] : altura[topo(p)];
+            res += distancia * (altura_limite - altura[topo_atual]);
+        }
+        push(p, i++);
+    }
+    free(p->dados);
+    free(p);
+    return res;
+}
+
+int main() {
+    int altura[] = {0,1,0,2,1,0,1,3,2,1,2,1};
+    int n = sizeof(altura) / sizeof(altura[0]);
+
+    int agua = trap(altura, n);
+    printf("Agua retida: %d\n", agua);
+
+    return 0;
+}
