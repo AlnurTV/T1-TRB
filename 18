@@ -1,0 +1,132 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define TAMANHO 100
+
+// Estrutura de Fila
+struct Fila {
+    int itens[TAMANHO];
+    int frente;
+    int tras;
+    int tamanho;
+};
+
+// Estrutura de Pilha
+struct Pilha {
+    int itens[TAMANHO];
+    int topo;
+};
+
+// Inicialização da fila
+void inicializar_fila(struct Fila* f) {
+    f->frente = 0;
+    f->tras = -1;
+    f->tamanho = 0;
+}
+
+// Inicialização da pilha
+void inicializar_pilha(struct Pilha* p) {
+    p->topo = -1;
+}
+
+int fila_vazia(struct Fila* f) {
+    return f->tamanho == 0;
+}
+
+int fila_cheia(struct Fila* f) {
+    return f->tamanho == TAMANHO;
+}
+
+int pilha_vazia(struct Pilha* p) {
+    return p->topo == -1;
+}
+
+void enfileirar(struct Fila* f, int valor) {
+    if (fila_cheia(f)) {
+        printf("Erro: fila cheia.\n");
+        return;
+    }
+    f->tras = (f->tras + 1) % TAMANHO;
+    f->itens[f->tras] = valor;
+    f->tamanho++;
+}
+
+int desenfileirar(struct Fila* f) {
+    if (fila_vazia(f)) {
+        printf("Erro: fila vazia.\n");
+        exit(1);
+    }
+    int valor = f->itens[f->frente];
+    f->frente = (f->frente + 1) % TAMANHO;
+    f->tamanho--;
+    return valor;
+}
+
+void push(struct Pilha* p, int valor) {
+    p->itens[++(p->topo)] = valor;
+}
+
+int pop(struct Pilha* p) {
+    return p->itens[(p->topo)--];
+}
+
+void imprimir_fila(struct Fila* f) {
+    printf("Fila: ");
+    if (fila_vazia(f)) {
+        printf("vazia\n");
+        return;
+    }
+    int i = f->frente;
+    for (int count = 0; count < f->tamanho; count++) {
+        printf("%d ", f->itens[i]);
+        i = (i + 1) % TAMANHO;
+    }
+    printf("\n");
+}
+
+void inverter_primeiros_k(struct Fila* f, int k) {
+    if (k > f->tamanho || k <= 0) {
+        printf("Valor inválido de K.\n");
+        return;
+    }
+
+    struct Pilha p;
+    inicializar_pilha(&p);
+
+    // Empilhar os primeiros k elementos
+    for (int i = 0; i < k; i++) {
+        push(&p, desenfileirar(f));
+    }
+
+    // Enfileirar de volta (inversos)
+    while (!pilha_vazia(&p)) {
+        enfileirar(f, pop(&p));
+    }
+
+    // Mover os (tamanho - k) elementos restantes para o final
+    int n = f->tamanho - k;
+    for (int i = 0; i < n; i++) {
+        enfileirar(f, desenfileirar(f));
+    }
+}
+
+int main() {
+    struct Fila f;
+    inicializar_fila(&f);
+
+    // Exemplo de fila: [1, 2, 3, 4, 5]
+    for (int i = 1; i <= 5; i++) {
+        enfileirar(&f, i);
+    }
+
+    printf("Fila original:\n");
+    imprimir_fila(&f);
+
+    int k = 3;
+    printf("Invertendo os primeiros %d elementos:\n", k);
+    inverter_primeiros_k(&f, k);
+
+    imprimir_fila(&f);
+
+    return 0;
+}
