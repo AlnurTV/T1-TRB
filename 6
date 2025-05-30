@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+struct No* criar_no(int dado) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    if (novo_no == NULL) {
+        printf("Erro ao alocar memoria!\n");
+        exit(1);
+    }
+    novo_no->dado = dado;
+    novo_no->proximo = NULL;
+    return novo_no;
+}
+
+void inserir_no_final(struct No** cabeca, int dado) {
+    struct No* novo_no = criar_no(dado);
+    if (*cabeca == NULL) {
+        *cabeca = novo_no;
+        return;
+    }
+    struct No* atual = *cabeca;
+    while (atual->proximo != NULL) {
+        atual = atual->proximo;
+    }
+    atual->proximo = novo_no;
+}
+
+void imprimir_lista(struct No* cabeca) {
+    struct No* atual = cabeca;
+    printf("Lista: ");
+    while (atual != NULL) {
+        printf("%d -> ", atual->dado);
+        atual = atual->proximo;
+    }
+    printf("NULL\n");
+}
+
+void inverter_lista(struct No** cabeca) {
+    struct No* anterior = NULL;
+    struct No* atual = *cabeca;
+    struct No* proximo = NULL;
+
+    while (atual != NULL) {
+        proximo = atual->proximo;
+        atual->proximo = anterior;
+        anterior = atual;
+        atual = proximo;
+    }
+
+    *cabeca = anterior;
+}
+
+void liberar_lista(struct No* cabeca) {
+    struct No* atual = cabeca;
+    while (atual != NULL) {
+        struct No* temp = atual;
+        atual = atual->proximo;
+        free(temp);
+    }
+}
+
+
+int main() {
+    struct No* lista = NULL;
+
+    inserir_no_final(&lista, 10);
+    inserir_no_final(&lista, 20);
+    inserir_no_final(&lista, 30);
+    inserir_no_final(&lista, 40);
+
+    printf("Lista original:\n");
+    imprimir_lista(lista);
+
+    inverter_lista(&lista);
+
+    printf("Lista invertida:\n");
+    imprimir_lista(lista);
+
+    liberar_lista(lista);
+
+    return 0;
+}
