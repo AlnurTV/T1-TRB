@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+struct No* inverter_grupos(struct No* cabeca, int K) {
+    if (cabeca == NULL) return NULL;
+
+    struct No* atual = cabeca;
+    struct No* prev = NULL;
+    struct No* prox = NULL;
+    int cont = 0;
+
+    // Inverte os primeiros K nós
+    while (atual != NULL && cont < K) {
+        prox = atual->proximo;
+        atual->proximo = prev;
+        prev = atual;
+        atual = prox;
+        cont++;
+    }
+
+    // Agora prox aponta para (K+1)-ésimo nó
+    if (prox != NULL) {
+        cabeca->proximo = inverter_grupos(prox, K);
+    }
+
+    // prev é a nova cabeça do grupo invertido
+    return prev;
+}
+
+// Função auxiliar para inserir no fim
+void inserir_final(struct No** cabeca, int valor) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    novo_no->dado = valor;
+    novo_no->proximo = NULL;
+    if (*cabeca == NULL) {
+        *cabeca = novo_no;
+        return;
+    }
+    struct No* atual = *cabeca;
+    while (atual->proximo != NULL) {
+        atual = atual->proximo;
+    }
+    atual->proximo = novo_no;
+}
+
+void imprimir_lista(struct No* cabeca) {
+    while (cabeca != NULL) {
+        printf("%d ", cabeca->dado);
+        cabeca = cabeca->proximo;
+    }
+    printf("\n");
+}
+
+int main() {
+    struct No* lista = NULL;
+    inserir_final(&lista, 1);
+    inserir_final(&lista, 2);
+    inserir_final(&lista, 3);
+    inserir_final(&lista, 4);
+    inserir_final(&lista, 5);
+
+    printf("Lista original:\n");
+    imprimir_lista(lista);
+
+    int K = 2;
+    lista = inverter_grupos(lista, K);
+
+    printf("Lista invertida em grupos de %d:\n", K);
+    imprimir_lista(lista);
+
+    return 0;
+}
