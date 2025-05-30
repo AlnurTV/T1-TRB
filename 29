@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+struct No* inverter_lista(struct No* cabeca) {
+    struct No* prev = NULL;
+    struct No* atual = cabeca;
+    struct No* prox = NULL;
+    while (atual != NULL) {
+        prox = atual->proximo;
+        atual->proximo = prev;
+        prev = atual;
+        atual = prox;
+    }
+    return prev;
+}
+
+int eh_palindromo(struct No* cabeca) {
+    if (cabeca == NULL || cabeca->proximo == NULL) return 1;
+
+    struct No* lento = cabeca;
+    struct No* rapido = cabeca;
+    while (rapido->proximo != NULL && rapido->proximo->proximo != NULL) {
+        lento = lento->proximo;
+        rapido = rapido->proximo->proximo;
+    }
+
+    struct No* segunda_metade = inverter_lista(lento->proximo);
+    struct No* segunda_metade_copia = segunda_metade;
+
+    struct No* primeira_metade = cabeca;
+    int palindromo = 1;
+    while (segunda_metade != NULL) {
+        if (primeira_metade->dado != segunda_metade->dado) {
+            palindromo = 0;
+            break;
+        }
+        primeira_metade = primeira_metade->proximo;
+        segunda_metade = segunda_metade->proximo;
+    }
+
+    lento->proximo = inverter_lista(segunda_metade_copia);
+
+    return palindromo;
+}
+
+void inserir_final(struct No** cabeca, int valor) {
+    struct No* novo_no = (struct No*) malloc(sizeof(struct No));
+    novo_no->dado = valor;
+    novo_no->proximo = NULL;
+    if (*cabeca == NULL) {
+        *cabeca = novo_no;
+    } else {
+        struct No* atual = *cabeca;
+        while (atual->proximo != NULL) {
+            atual = atual->proximo;
+        }
+        atual->proximo = novo_no;
+    }
+}
+
+void imprimir_lista(struct No* cabeca) {
+    while (cabeca != NULL) {
+        printf("%d ", cabeca->dado);
+        cabeca = cabeca->proximo;
+    }
+    printf("\n");
+}
+
+int main() {
+    struct No* lista = NULL;
+    inserir_final(&lista, 1);
+    inserir_final(&lista, 2);
+    inserir_final(&lista, 3);
+    inserir_final(&lista, 2);
+    inserir_final(&lista, 1);
+
+    imprimir_lista(lista);
+
+    if (eh_palindromo(lista)) {
+        printf("É palíndromo\n");
+    } else {
+        printf("Não é palíndromo\n");
+    }
+
+    imprimir_lista(lista);
+
+    return 0;
+}
