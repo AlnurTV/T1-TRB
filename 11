@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 1000
+
+struct Pilha {
+    char itens[MAX];
+    int topo;
+};
+
+void inicializar(struct Pilha* p) {
+    p->topo = -1;
+}
+
+int esta_vazia(struct Pilha* p) {
+    return p->topo == -1;
+}
+
+int esta_cheia(struct Pilha* p) {
+    return p->topo == MAX - 1;
+}
+
+void push(struct Pilha* p, char c) {
+    if (esta_cheia(p)) {
+        printf("Erro: pilha cheia.\n");
+        exit(1);
+    }
+    p->itens[++(p->topo)] = c;
+}
+
+char pop(struct Pilha* p) {
+    if (esta_vazia(p)) {
+        return '\0'; // pilha vazia
+    }
+    return p->itens[(p->topo)--];
+}
+
+char topo(struct Pilha* p) {
+    if (esta_vazia(p)) {
+        return '\0';
+    }
+    return p->itens[p->topo];
+}
+
+int verificar_balanceamento(const char* str) {
+    struct Pilha p;
+    inicializar(&p);
+
+    for (int i = 0; str[i] != '\0'; i++) {
+        char c = str[i];
+        if (c == '(' || c == '{' || c == '[') {
+            push(&p, c);
+        } else if (c == ')' || c == '}' || c == ']') {
+            if (esta_vazia(&p)) return 0;
+            char t = pop(&p);
+            if ((c == ')' && t != '(') ||
+                (c == '}' && t != '{') ||
+                (c == ']' && t != '[')) {
+                return 0;
+            }
+        }
+    }
+    return esta_vazia(&p);
+}
+
+int main() {
+    const char* testes[] = {
+        "({[]})",
+        "({[)]}",
+        "((()))",
+        "{[()]}[]",
+        "({[}",
+        "",
+        "([{}])(){}[]"
+    };
+
+    for (int i = 0; i < sizeof(testes)/sizeof(testes[0]); i++) {
+        printf("'%s' -> %s\n", testes[i], verificar_balanceamento(testes[i]) ? "Válido" : "Inválido");
+    }
+
+    return 0;
+}
