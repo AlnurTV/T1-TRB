@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+typedef struct {
+    int dados[MAX];
+    int topo1; // topo da pilha 1 (cresce da esquerda para direita)
+    int topo2; // topo da pilha 2 (cresce da direita para esquerda)
+} DuasPilhas;
+
+void inicializar(DuasPilhas* pilhas) {
+    pilhas->topo1 = -1;
+    pilhas->topo2 = MAX;
+}
+
+int esta_vazia1(DuasPilhas* pilhas) {
+    return pilhas->topo1 == -1;
+}
+
+int esta_vazia2(DuasPilhas* pilhas) {
+    return pilhas->topo2 == MAX;
+}
+
+int esta_cheia(DuasPilhas* pilhas) {
+    return pilhas->topo1 + 1 == pilhas->topo2;
+}
+
+void push1(DuasPilhas* pilhas, int valor) {
+    if (esta_cheia(pilhas)) {
+        printf("Erro: Pilhas cheias!\n");
+        return;
+    }
+    pilhas->dados[++pilhas->topo1] = valor;
+}
+
+void push2(DuasPilhas* pilhas, int valor) {
+    if (esta_cheia(pilhas)) {
+        printf("Erro: Pilhas cheias!\n");
+        return;
+    }
+    pilhas->dados[--pilhas->topo2] = valor;
+}
+
+int pop1(DuasPilhas* pilhas) {
+    if (esta_vazia1(pilhas)) {
+        printf("Erro: Pilha 1 vazia!\n");
+        return -1;
+    }
+    return pilhas->dados[pilhas->topo1--];
+}
+
+int pop2(DuasPilhas* pilhas) {
+    if (esta_vazia2(pilhas)) {
+        printf("Erro: Pilha 2 vazia!\n");
+        return -1;
+    }
+    return pilhas->dados[pilhas->topo2++];
+}
+
+int topo1(DuasPilhas* pilhas) {
+    if (esta_vazia1(pilhas)) {
+        printf("Erro: Pilha 1 vazia!\n");
+        return -1;
+    }
+    return pilhas->dados[pilhas->topo1];
+}
+
+int topo2(DuasPilhas* pilhas) {
+    if (esta_vazia2(pilhas)) {
+        printf("Erro: Pilha 2 vazia!\n");
+        return -1;
+    }
+    return pilhas->dados[pilhas->topo2];
+}
+
+int main() {
+    DuasPilhas pilhas;
+    inicializar(&pilhas);
+
+    push1(&pilhas, 1);
+    push1(&pilhas, 2);
+    push1(&pilhas, 3);
+
+    push2(&pilhas, 10);
+    push2(&pilhas, 20);
+    push2(&pilhas, 30);
+
+    printf("Topo pilha 1: %d\n", topo1(&pilhas));
+    printf("Topo pilha 2: %d\n", topo2(&pilhas));
+
+    printf("Pop pilha 1: %d\n", pop1(&pilhas));
+    printf("Pop pilha 2: %d\n", pop2(&pilhas));
+
+    printf("Topo pilha 1 após pop: %d\n", topo1(&pilhas));
+    printf("Topo pilha 2 após pop: %d\n", topo2(&pilhas));
+
+    return 0;
+}
