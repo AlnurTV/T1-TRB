@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+struct Fila {
+    struct No* inicio;
+    struct No* fim;
+};
+
+void inicializar(struct Fila* f) {
+    f->inicio = NULL;
+    f->fim = NULL;
+}
+
+int esta_vazia(struct Fila* f) {
+    return f->inicio == NULL;
+}
+
+void enfileirar(struct Fila* f, int valor) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    if (novo_no == NULL) {
+        printf("Erro ao alocar memória!\n");
+        exit(1);
+    }
+    novo_no->dado = valor;
+    novo_no->proximo = NULL;
+
+    if (esta_vazia(f)) {
+        f->inicio = novo_no;
+    } else {
+        f->fim->proximo = novo_no;
+    }
+    f->fim = novo_no;
+}
+
+int desenfileirar(struct Fila* f) {
+    if (esta_vazia(f)) {
+        printf("Erro: fila vazia.\n");
+        exit(1);
+    }
+    struct No* temp = f->inicio;
+    int valor = temp->dado;
+    f->inicio = temp->proximo;
+    if (f->inicio == NULL) {
+        f->fim = NULL;
+    }
+    free(temp);
+    return valor;
+}
+
+int frente(struct Fila* f) {
+    if (esta_vazia(f)) {
+        printf("Erro: fila vazia.\n");
+        exit(1);
+    }
+    return f->inicio->dado;
+}
+
+void imprimir_fila(struct Fila* f) {
+    printf("Fila: ");
+    struct No* atual = f->inicio;
+    while (atual != NULL) {
+        printf("%d ", atual->dado);
+        atual = atual->proximo;
+    }
+    printf("\n");
+}
+
+void liberar_fila(struct Fila* f) {
+    while (!esta_vazia(f)) {
+        desenfileirar(f);
+    }
+}
+
+int main() {
+    struct Fila f;
+    inicializar(&f);
+
+    enfileirar(&f, 10);
+    enfileirar(&f, 20);
+    enfileirar(&f, 30);
+
+    imprimir_fila(&f);
+
+    printf("Frente: %d\n", frente(&f));
+
+    printf("Desenfileirar: %d\n", desenfileirar(&f));
+    imprimir_fila(&f);
+
+    enfileirar(&f, 40);
+    enfileirar(&f, 50);
+    imprimir_fila(&f);
+
+    liberar_fila(&f);
+
+    return 0;
+}
