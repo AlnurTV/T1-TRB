@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+void inserir_final(struct No** cabeca, int valor) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    novo_no->dado = valor;
+    novo_no->proximo = NULL;
+
+    if (*cabeca == NULL) {
+        *cabeca = novo_no;
+        return;
+    }
+
+    struct No* atual = *cabeca;
+    while (atual->proximo != NULL) {
+        atual = atual->proximo;
+    }
+    atual->proximo = novo_no;
+}
+
+void imprimir_lista(struct No* cabeca) {
+    struct No* atual = cabeca;
+    while (atual != NULL) {
+        printf("%d ", atual->dado);
+        atual = atual->proximo;
+    }
+    printf("\n");
+}
+
+int tamanho(struct No* cabeca) {
+    int cont = 0;
+    while (cabeca != NULL) {
+        cont++;
+        cabeca = cabeca->proximo;
+    }
+    return cont;
+}
+
+void rotacionar_lista(struct No** cabeca, int K) {
+    if (*cabeca == NULL || K == 0) return;
+
+    int len = tamanho(*cabeca);
+    K = K % len; 
+    if (K == 0) return;
+
+    struct No* atual = *cabeca;
+    struct No* novo_final = NULL;
+
+    int passos_para_novo_final = len - K - 1;
+
+    for (int i = 0; i < passos_para_novo_final; i++) {
+        atual = atual->proximo;
+    }
+
+    novo_final = atual;
+    struct No* novo_inicio = novo_final->proximo;
+
+    struct No* fim = novo_inicio;
+    while (fim->proximo != NULL) {
+        fim = fim->proximo;
+    }
+
+    fim->proximo = *cabeca;
+    novo_final->proximo = NULL;
+    *cabeca = novo_inicio;
+}
+
+int main() {
+    struct No* lista = NULL;
+
+    inserir_final(&lista, 1);
+    inserir_final(&lista, 2);
+    inserir_final(&lista, 3);
+    inserir_final(&lista, 4);
+    inserir_final(&lista, 5);
+
+    printf("Lista original:\n");
+    imprimir_lista(lista);
+
+    int K = 2;
+    rotacionar_lista(&lista, K);
+
+    printf("Lista rotacionada em %d posições:\n", K);
+    imprimir_lista(lista);
+
+    return 0;
+}
