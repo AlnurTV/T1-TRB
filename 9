@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define TAMANHO 100
+
+struct Pilha {
+    int itens[TAMANHO];
+    int topo;
+};
+
+void inicializar(struct Pilha* p) {
+    p->topo = -1;
+}
+
+int esta_vazia(struct Pilha* p) {
+    return p->topo == -1;
+}
+
+int esta_cheia(struct Pilha* p) {
+    return p->topo == TAMANHO - 1;
+}
+
+void push(struct Pilha* p, int valor) {
+    if (esta_cheia(p)) {
+        printf("Erro: pilha cheia.\n");
+        return;
+    }
+    p->itens[++(p->topo)] = valor;
+}
+
+int pop(struct Pilha* p) {
+    if (esta_vazia(p)) {
+        printf("Erro: pilha vazia.\n");
+        exit(1);
+    }
+    return p->itens[(p->topo)--];
+}
+
+int topo(struct Pilha* p) {
+    if (esta_vazia(p)) {
+        printf("Erro: pilha vazia.\n");
+        exit(1);
+    }
+    return p->itens[p->topo];
+}
+
+int main() {
+    struct Pilha p;
+    inicializar(&p);
+
+    push(&p, 10);
+    push(&p, 20);
+    push(&p, 30);
+
+    printf("Topo: %d\n", topo(&p));
+
+    printf("Pop: %d\n", pop(&p));
+    printf("Topo: %d\n", topo(&p));
+
+    while (!esta_vazia(&p)) {
+        printf("Pop: %d\n", pop(&p));
+    }
+
+    if (esta_vazia(&p)) {
+        printf("A pilha está vazia.\n");
+    }
+
+    return 0;
+}
