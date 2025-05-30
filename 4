@@ -1,0 +1,80 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+struct No* criar_no(int dado) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    if (novo_no == NULL) {
+        printf("Erro ao alocar memoria!\n");
+        exit(1);
+    }
+    novo_no->dado = dado;
+    novo_no->proximo = NULL;
+    return novo_no;
+}
+
+void inserir_posicao(struct No** cabeca, int dado, int posicao) {
+    struct No* novo_no = criar_no(dado);
+
+    if (posicao == 0) {
+        novo_no->proximo = *cabeca;
+        *cabeca = novo_no;
+        return;
+    }
+
+    struct No* atual = *cabeca;
+    int i;
+    for (i = 0; i < posicao - 1 && atual != NULL; i++) {
+        atual = atual->proximo;
+    }
+
+    if (atual == NULL) {
+        printf("Posicao invalida! Insercao nao realizada.\n");
+        free(novo_no);
+        return;
+    }
+
+    novo_no->proximo = atual->proximo;
+    atual->proximo = novo_no;
+}
+
+void imprimir_lista(struct No* cabeca) {
+    struct No* atual = cabeca;
+    printf("Lista: ");
+    while (atual != NULL) {
+        printf("%d -> ", atual->dado);
+        atual = atual->proximo;
+    }
+    printf("NULL\n");
+}
+
+void liberar_lista(struct No* cabeca) {
+    struct No* atual = cabeca;
+    while (atual != NULL) {
+        struct No* temp = atual;
+        atual = atual->proximo;
+        free(temp);
+    }
+}
+
+
+int main() {
+    struct No* lista = NULL;
+
+    inserir_posicao(&lista, 10, 0);
+    inserir_posicao(&lista, 20, 1);
+    inserir_posicao(&lista, 30, 2);
+    inserir_posicao(&lista, 15, 1);
+    inserir_posicao(&lista, 5, 0);
+    inserir_posicao(&lista, 100, 10);
+
+    imprimir_lista(lista);
+
+    liberar_lista(lista);
+
+    return 0;
+}
