@@ -1,0 +1,97 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+struct No* criar_no(int dado) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    if (novo_no == NULL) {
+        printf("Erro ao alocar memoria!\n");
+        exit(1);
+    }
+    novo_no->dado = dado;
+    novo_no->proximo = NULL;
+    return novo_no;
+}
+
+void inserir_no_final(struct No** cabeca, int dado) {
+    struct No* novo_no = criar_no(dado);
+    if (*cabeca == NULL) {
+        *cabeca = novo_no;
+        return;
+    }
+    struct No* atual = *cabeca;
+    while (atual->proximo != NULL) {
+        atual = atual->proximo;
+    }
+    atual->proximo = novo_no;
+}
+
+void imprimir_lista(struct No* cabeca) {
+    struct No* atual = cabeca;
+    printf("Lista: ");
+    while (atual != NULL) {
+        printf("%d -> ", atual->dado);
+        atual = atual->proximo;
+    }
+    printf("NULL\n");
+}
+
+void remover_valor(struct No** cabeca, int valor) {
+    struct No* atual = *cabeca;
+    struct No* anterior = NULL;
+
+    while (atual != NULL) {
+        if (atual->dado == valor) {
+            if (anterior == NULL) {
+                *cabeca = atual->proximo;
+            } else {
+                anterior->proximo = atual->proximo;
+            }
+            free(atual);
+            printf("Valor %d removido da lista.\n", valor);
+            return;
+        }
+        anterior = atual;
+        atual = atual->proximo;
+    }
+    printf("Valor %d nao encontrado na lista.\n", valor);
+}
+
+void liberar_lista(struct No* cabeca) {
+    struct No* atual = cabeca;
+    while (atual != NULL) {
+        struct No* temp = atual;
+        atual = atual->proximo;
+        free(temp);
+    }
+}
+
+
+int main() {
+    struct No* lista = NULL;
+
+    inserir_no_final(&lista, 10);
+    inserir_no_final(&lista, 20);
+    inserir_no_final(&lista, 30);
+    inserir_no_final(&lista, 40);
+    inserir_no_final(&lista, 30);
+
+    imprimir_lista(lista);
+
+    remover_valor(&lista, 30);
+    imprimir_lista(lista);
+
+    remover_valor(&lista, 10);
+    imprimir_lista(lista);
+
+    remover_valor(&lista, 50);
+    imprimir_lista(lista);
+
+    liberar_lista(lista);
+
+    return 0;
+}
