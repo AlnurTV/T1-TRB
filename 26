@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX 100
+
+typedef struct {
+    int dados[MAX];
+    int topo;
+} Pilha;
+
+void inicializar(Pilha* p) {
+    p->topo = -1;
+}
+
+int esta_vazia(Pilha* p) {
+    return p->topo == -1;
+}
+
+void push(Pilha* p, int valor) {
+    if (p->topo == MAX - 1) {
+        printf("Erro: pilha cheia!\n");
+        exit(1);
+    }
+    p->dados[++p->topo] = valor;
+}
+
+int pop(Pilha* p) {
+    if (esta_vazia(p)) {
+        printf("Erro: pilha vazia!\n");
+        exit(1);
+    }
+    return p->dados[p->topo--];
+}
+
+int avaliar_posfixa(const char* expr) {
+    Pilha p;
+    inicializar(&p);
+
+    char expr_copy[256];
+    strncpy(expr_copy, expr, 255);
+    expr_copy[255] = '\0';
+
+    char* token = strtok(expr_copy, " ");
+    while (token != NULL) {
+        if (isdigit(token[0]) || 
+           (token[0] == '-' && isdigit(token[1]))) { // número (positivo ou negativo)
+            int num = atoi(token);
+            push(&p, num);
+        } else {
+            int b = pop(&p);
+            int a = pop(&p);
+            switch (token[0]) {
+                case '+': push(&p, a + b); break;
+                case '-': push(&p, a - b); break;
+                case '*': push(&p, a * b); break;
+                case '/': 
+                    if (b == 0) {
+                        printf("Erro: divisão por zero!\n");
+                        exit(1);
+                    }
+                    push(&p, a / b); 
+                    break;
+                default:
+                    printf("Erro: operador desconhecido '%s'\n", token);
+                    exit(1);
+            }
+        }
+        token = strtok(NULL, " ");
+    }
+
+    if (p.topo != 0) {
+        printf("Erro: expressão inválida!\n");
+        exit(1);
+    }
+
+    return pop(&p);
+}
+
+int main() {
+    const char* expr = "3 4 + 2 *";
+    int resultado = avaliar_posfixa(expr);
+    printf("Resultado: %d\n", resultado);
+    return 0;
+}
