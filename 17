@@ -1,0 +1,80 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define TAMANHO 100
+
+struct No {
+    char binario[100];
+    struct No* proximo;
+};
+
+struct Fila {
+    struct No* inicio;
+    struct No* fim;
+};
+
+void inicializar(struct Fila* f) {
+    f->inicio = NULL;
+    f->fim = NULL;
+}
+
+int esta_vazia(struct Fila* f) {
+    return f->inicio == NULL;
+}
+
+void enfileirar(struct Fila* f, const char* bin) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    strcpy(novo_no->binario, bin);
+    novo_no->proximo = NULL;
+
+    if (esta_vazia(f)) {
+        f->inicio = novo_no;
+    } else {
+        f->fim->proximo = novo_no;
+    }
+    f->fim = novo_no;
+}
+
+char* desenfileirar(struct Fila* f) {
+    if (esta_vazia(f)) {
+        printf("Erro: fila vazia.\n");
+        exit(1);
+    }
+    struct No* temp = f->inicio;
+    char* valor = strdup(temp->binario);
+    f->inicio = temp->proximo;
+    if (f->inicio == NULL) {
+        f->fim = NULL;
+    }
+    free(temp);
+    return valor;
+}
+
+void gerar_binarios(int N) {
+    struct Fila f;
+    inicializar(&f);
+
+    enfileirar(&f, "1");
+
+    for (int i = 0; i < N; i++) {
+        char* atual = desenfileirar(&f);
+        printf("%s\n", atual);
+
+        char bin1[100], bin2[100];
+        sprintf(bin1, "%s0", atual);
+        sprintf(bin2, "%s1", atual);
+
+        enfileirar(&f, bin1);
+        enfileirar(&f, bin2);
+
+        free(atual);
+    }
+}
+
+int main() {
+    int N = 10; // Exemplo: primeiros 10 números binários
+    printf("Primeiros %d números binários:\n", N);
+    gerar_binarios(N);
+    return 0;
+}
