@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+struct No* criar_no(int dado) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    if (novo_no == NULL) {
+        printf("Erro ao alocar memoria!\n");
+        exit(1);
+    }
+    novo_no->dado = dado;
+    novo_no->proximo = NULL;
+    return novo_no;
+}
+
+void inserir_no_final(struct No** cabeca, int dado) {
+    struct No* novo_no = criar_no(dado);
+    if (*cabeca == NULL) {
+        *cabeca = novo_no;
+        return;
+    }
+    struct No* atual = *cabeca;
+    while (atual->proximo != NULL) {
+        atual = atual->proximo;
+    }
+    atual->proximo = novo_no;
+}
+
+int contar_nos(struct No* cabeca) {
+    int contador = 0;
+    struct No* atual = cabeca;
+    while (atual != NULL) {
+        contador++;
+        atual = atual->proximo;
+    }
+    return contador;
+}
+
+void liberar_lista(struct No* cabeca) {
+    struct No* atual = cabeca;
+    while (atual != NULL) {
+        struct No* temp = atual;
+        atual = atual->proximo;
+        free(temp);
+    }
+}
+
+int main() {
+    struct No* lista = NULL;
+
+    inserir_no_final(&lista, 10);
+    inserir_no_final(&lista, 20);
+    inserir_no_final(&lista, 30);
+    inserir_no_final(&lista, 40);
+
+    int total = contar_nos(lista);
+    printf("Numero de nos na lista: %d\n", total);
+ 
+    liberar_lista(lista);
+
+    return 0;
+}
