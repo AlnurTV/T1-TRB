@@ -1,0 +1,109 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define MAX 100
+
+typedef struct {
+    int dados[MAX];
+    int topo;
+} Pilha;
+
+void inicializar(Pilha* p) {
+    p->topo = -1;
+}
+
+int esta_vazia(Pilha* p) {
+    return p->topo == -1;
+}
+
+int esta_cheia(Pilha* p) {
+    return p->topo == MAX - 1;
+}
+
+void push(Pilha* p, int valor) {
+    if (esta_cheia(p)) {
+        printf("Erro: pilha cheia!\n");
+        return;
+    }
+    p->dados[++p->topo] = valor;
+}
+
+int pop(Pilha* p) {
+    if (esta_vazia(p)) {
+        printf("Erro: pilha vazia!\n");
+        return INT_MIN;
+    }
+    return p->dados[p->topo--];
+}
+
+int topo(Pilha* p) {
+    if (esta_vazia(p)) {
+        printf("Erro: pilha vazia!\n");
+        return INT_MIN;
+    }
+    return p->dados[p->topo];
+}
+
+// Pilha com mínimo
+typedef struct {
+    Pilha principal;
+    Pilha minimos;
+} PilhaComMinimo;
+
+void inicializar_com_min(PilhaComMinimo* p) {
+    inicializar(&p->principal);
+    inicializar(&p->minimos);
+}
+
+void push_com_min(PilhaComMinimo* p, int valor) {
+    push(&p->principal, valor);
+    if (esta_vazia(&p->minimos) || valor <= topo(&p->minimos)) {
+        push(&p->minimos, valor);
+    }
+}
+
+int pop_com_min(PilhaComMinimo* p) {
+    if (esta_vazia(&p->principal)) {
+        printf("Erro: pilha vazia!\n");
+        return INT_MIN;
+    }
+    int valor = pop(&p->principal);
+    if (valor == topo(&p->minimos)) {
+        pop(&p->minimos);
+    }
+    return valor;
+}
+
+int topo_com_min(PilhaComMinimo* p) {
+    return topo(&p->principal);
+}
+
+int obter_minimo(PilhaComMinimo* p) {
+    if (esta_vazia(&p->minimos)) {
+        printf("Erro: pilha vazia!\n");
+        return INT_MIN;
+    }
+    return topo(&p->minimos);
+}
+
+int main() {
+    PilhaComMinimo pilha;
+    inicializar_com_min(&pilha);
+
+    push_com_min(&pilha, 5);
+    push_com_min(&pilha, 3);
+    push_com_min(&pilha, 7);
+    push_com_min(&pilha, 3);
+
+    printf("Topo: %d\n", topo_com_min(&pilha));
+    printf("Mínimo: %d\n", obter_minimo(&pilha));
+
+    pop_com_min(&pilha);
+    printf("Após pop, mínimo: %d\n", obter_minimo(&pilha));
+
+    pop_com_min(&pilha);
+    printf("Após pop, mínimo: %d\n", obter_minimo(&pilha));
+
+    return 0;
+}
