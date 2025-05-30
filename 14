@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 1000
+
+struct Pilha {
+    int itens[MAX];
+    int topo;
+};
+
+void inicializar(struct Pilha* p) {
+    p->topo = -1;
+}
+
+int esta_vazia(struct Pilha* p) {
+    return p->topo == -1;
+}
+
+void push(struct Pilha* p, int valor) {
+    p->itens[++(p->topo)] = valor;
+}
+
+int pop(struct Pilha* p) {
+    return p->itens[(p->topo)--];
+}
+
+int topo(struct Pilha* p) {
+    return p->itens[p->topo];
+}
+
+void imprimir_pilha(struct Pilha* p) {
+    printf("Pilha: ");
+    for (int i = p->topo; i >= 0; i--) {
+        printf("%d ", p->itens[i]);
+    }
+    printf("\n");
+}
+
+void ordenar_pilha(struct Pilha* p) {
+    struct Pilha aux;
+    inicializar(&aux);
+
+    while (!esta_vazia(p)) {
+        int tmp = pop(p);
+
+        while (!esta_vazia(&aux) && topo(&aux) > tmp) {
+            push(p, pop(&aux));
+        }
+        push(&aux, tmp);
+    }
+
+    // Transferir de volta para a pilha original (ordenada)
+    while (!esta_vazia(&aux)) {
+        push(p, pop(&aux));
+    }
+}
+
+int main() {
+    struct Pilha p;
+    inicializar(&p);
+
+    push(&p, 3);
+    push(&p, 1);
+    push(&p, 4);
+    push(&p, 2);
+    push(&p, 5);
+
+    printf("Pilha original:\n");
+    imprimir_pilha(&p);
+
+    ordenar_pilha(&p);
+
+    printf("Pilha ordenada:\n");
+    imprimir_pilha(&p);
+
+    return 0;
+}
