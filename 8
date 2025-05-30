@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+struct No* criar_no(int dado) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    novo_no->dado = dado;
+    novo_no->proximo = NULL;
+    return novo_no;
+}
+
+void inserir_no_final(struct No** cabeca, int dado) {
+    struct No* novo_no = criar_no(dado);
+    if (*cabeca == NULL) {
+        *cabeca = novo_no;
+        return;
+    }
+    struct No* atual = *cabeca;
+    while (atual->proximo != NULL) {
+        atual = atual->proximo;
+    }
+    atual->proximo = novo_no;
+}
+
+void imprimir_reverso_pilha(struct No* cabeca) {
+    int tamanho = 0;
+    struct No* atual = cabeca;
+    while (atual != NULL) {
+        tamanho++;
+        atual = atual->proximo;
+    }
+
+    int* pilha = (int*)malloc(tamanho * sizeof(int));
+    int topo = -1;
+
+    atual = cabeca;
+    while (atual != NULL) {
+        pilha[++topo] = atual->dado;
+        atual = atual->proximo;
+    }
+
+    printf("Lista reversa (usando pilha): ");
+    while (topo >= 0) {
+        printf("%d -> ", pilha[topo--]);
+    }
+    printf("NULL\n");
+
+    free(pilha);
+}
+
+void liberar_lista(struct No* cabeca) {
+    struct No* atual = cabeca;
+    while (atual != NULL) {
+        struct No* temp = atual;
+        atual = atual->proximo;
+        free(temp);
+    }
+}
+
+int main() {
+    struct No* lista = NULL;
+
+    inserir_no_final(&lista, 10);
+    inserir_no_final(&lista, 20);
+    inserir_no_final(&lista, 30);
+    inserir_no_final(&lista, 40);
+
+    imprimir_reverso_pilha(lista);
+
+    liberar_lista(lista);
+
+    return 0;
+}
