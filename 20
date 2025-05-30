@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+struct No* criar_no(int valor) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    novo_no->dado = valor;
+    novo_no->proximo = NULL;
+    return novo_no;
+}
+
+void inserir_final(struct No** cabeca, int valor) {
+    struct No* novo_no = criar_no(valor);
+    if (*cabeca == NULL) {
+        *cabeca = novo_no;
+        return;
+    }
+    struct No* atual = *cabeca;
+    while (atual->proximo != NULL) {
+        atual = atual->proximo;
+    }
+    atual->proximo = novo_no;
+}
+
+void imprimir_lista(struct No* cabeca) {
+    struct No* atual = cabeca;
+    while (atual != NULL) {
+        printf("%d ", atual->dado);
+        atual = atual->proximo;
+    }
+    printf("\n");
+}
+
+struct No* unir_listas_ordenadas(struct No* l1, struct No* l2) {
+    if (l1 == NULL) return l2;
+    if (l2 == NULL) return l1;
+
+    struct No* resultado = NULL;
+
+    if (l1->dado < l2->dado) {
+        resultado = l1;
+        resultado->proximo = unir_listas_ordenadas(l1->proximo, l2);
+    } else {
+        resultado = l2;
+        resultado->proximo = unir_listas_ordenadas(l1, l2->proximo);
+    }
+    return resultado;
+}
+
+int main() {
+    struct No* lista1 = NULL;
+    struct No* lista2 = NULL;
+
+    inserir_final(&lista1, 1);
+    inserir_final(&lista1, 3);
+    inserir_final(&lista1, 5);
+
+    inserir_final(&lista2, 2);
+    inserir_final(&lista2, 4);
+    inserir_final(&lista2, 6);
+
+    printf("Lista 1: ");
+    imprimir_lista(lista1);
+    printf("Lista 2: ");
+    imprimir_lista(lista2);
+
+    struct No* unida = unir_listas_ordenadas(lista1, lista2);
+
+    printf("Lista unida ordenada: ");
+    imprimir_lista(unida);
+
+    return 0;
+}
