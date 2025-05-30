@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+struct No* criar_no(int valor) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    novo_no->dado = valor;
+    novo_no->proximo = NULL;
+    return novo_no;
+}
+
+void inserir_final(struct No** cabeca, int valor) {
+    struct No* novo_no = criar_no(valor);
+    if (*cabeca == NULL) {
+        *cabeca = novo_no;
+        return;
+    }
+    struct No* atual = *cabeca;
+    while (atual->proximo != NULL) {
+        atual = atual->proximo;
+    }
+    atual->proximo = novo_no;
+}
+
+int tamanho(struct No* cabeca) {
+    int cont = 0;
+    while (cabeca != NULL) {
+        cont++;
+        cabeca = cabeca->proximo;
+    }
+    return cont;
+}
+
+struct No* encontrar_intersecao(struct No* l1, struct No* l2) {
+    int tam1 = tamanho(l1);
+    int tam2 = tamanho(l2);
+
+    int diff = abs(tam1 - tam2);
+
+    if (tam1 > tam2) {
+        for (int i = 0; i < diff; i++) l1 = l1->proximo;
+    } else {
+        for (int i = 0; i < diff; i++) l2 = l2->proximo;
+    }
+
+    while (l1 != NULL && l2 != NULL) {
+        if (l1 == l2) return l1;
+        l1 = l1->proximo;
+        l2 = l2->proximo;
+    }
+
+    return NULL;
+}
+
+int main() {
+    struct No* lista1 = NULL;
+    struct No* lista2 = NULL;
+
+    inserir_final(&lista1, 1);
+    inserir_final(&lista1, 2);
+    inserir_final(&lista1, 3);
+
+    inserir_final(&lista2, 9);
+    inserir_final(&lista2, 8);
+
+    struct No* intersecao = criar_no(10);
+    lista1->proximo->proximo->proximo = intersecao; // 3 -> 10
+    lista2->proximo->proximo = intersecao;          // 8 -> 10
+
+    inserir_final(&intersecao, 11);
+    inserir_final(&intersecao, 12);
+
+    struct No* resultado = encontrar_intersecao(lista1, lista2);
+    if (resultado != NULL) {
+        printf("Interseção encontrada no nó com valor: %d\n", resultado->dado);
+    } else {
+        printf("Nenhuma interseção encontrada.\n");
+    }
+
+    return 0;
+}
