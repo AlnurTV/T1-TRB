@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define TAMANHO 100
+
+struct Fila {
+    int itens[TAMANHO];
+    int frente;
+    int tras;
+    int tamanho;
+};
+
+void inicializar(struct Fila* f) {
+    f->frente = 0;
+    f->tras = -1;
+    f->tamanho = 0;
+}
+
+int esta_vazia(struct Fila* f) {
+    return f->tamanho == 0;
+}
+
+int esta_cheia(struct Fila* f) {
+    return f->tamanho == TAMANHO;
+}
+
+void enfileirar(struct Fila* f, int valor) {
+    if (esta_cheia(f)) {
+        printf("Erro: fila cheia.\n");
+        return;
+    }
+    f->tras = (f->tras + 1) % TAMANHO;
+    f->itens[f->tras] = valor;
+    f->tamanho++;
+}
+
+int desenfileirar(struct Fila* f) {
+    if (esta_vazia(f)) {
+        printf("Erro: fila vazia.\n");
+        exit(1);
+    }
+    int valor = f->itens[f->frente];
+    f->frente = (f->frente + 1) % TAMANHO;
+    f->tamanho--;
+    return valor;
+}
+
+int frente(struct Fila* f) {
+    if (esta_vazia(f)) {
+        printf("Erro: fila vazia.\n");
+        exit(1);
+    }
+    return f->itens[f->frente];
+}
+
+void imprimir_fila(struct Fila* f) {
+    printf("Fila: ");
+    if (esta_vazia(f)) {
+        printf("vazia\n");
+        return;
+    }
+    int i = f->frente;
+    for (int count = 0; count < f->tamanho; count++) {
+        printf("%d ", f->itens[i]);
+        i = (i + 1) % TAMANHO;
+    }
+    printf("\n");
+}
+
+int main() {
+    struct Fila f;
+    inicializar(&f);
+
+    enfileirar(&f, 10);
+    enfileirar(&f, 20);
+    enfileirar(&f, 30);
+    enfileirar(&f, 40);
+
+    imprimir_fila(&f);
+
+    printf("Frente: %d\n", frente(&f));
+
+    printf("Desenfileirar: %d\n", desenfileirar(&f));
+    printf("Frente: %d\n", frente(&f));
+
+    imprimir_fila(&f);
+
+    enfileirar(&f, 50);
+    imprimir_fila(&f);
+
+    return 0;
+}
