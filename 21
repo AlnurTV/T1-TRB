@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+void inserir_final(struct No** cabeca, int valor) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    novo_no->dado = valor;
+    novo_no->proximo = NULL;
+
+    if (*cabeca == NULL) {
+        *cabeca = novo_no;
+        return;
+    }
+
+    struct No* atual = *cabeca;
+    while (atual->proximo != NULL) {
+        atual = atual->proximo;
+    }
+    atual->proximo = novo_no;
+}
+
+void imprimir_lista(struct No* cabeca) {
+    struct No* atual = cabeca;
+    while (atual != NULL) {
+        printf("%d ", atual->dado);
+        atual = atual->proximo;
+    }
+    printf("\n");
+}
+
+void remover_todas_ocorrencias(struct No** cabeca, int valor) {
+    struct No* atual = *cabeca;
+    struct No* anterior = NULL;
+
+    while (atual != NULL) {
+        if (atual->dado == valor) {
+            struct No* temp = atual;
+            if (anterior == NULL) {
+                *cabeca = atual->proximo;
+                atual = *cabeca;
+            } else {
+                anterior->proximo = atual->proximo;
+                atual = atual->proximo;
+            }
+            free(temp);
+        } else {
+            anterior = atual;
+            atual = atual->proximo;
+        }
+    }
+}
+
+int main() {
+    struct No* lista = NULL;
+
+    inserir_final(&lista, 1);
+    inserir_final(&lista, 2);
+    inserir_final(&lista, 3);
+    inserir_final(&lista, 2);
+    inserir_final(&lista, 4);
+    inserir_final(&lista, 2);
+
+    printf("Lista original:\n");
+    imprimir_lista(lista);
+
+    int valor_remover = 2;
+    printf("Removendo todas as ocorrências de %d...\n", valor_remover);
+    remover_todas_ocorrencias(&lista, valor_remover);
+
+    printf("Lista após remoção:\n");
+    imprimir_lista(lista);
+
+    return 0;
+}
