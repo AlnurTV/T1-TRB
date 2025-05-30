@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+typedef struct {
+    int dados[MAX];
+    int topo;
+} Pilha;
+
+void inicializar(Pilha* p) {
+    p->topo = -1;
+}
+
+int esta_vazia(Pilha* p) {
+    return p->topo == -1;
+}
+
+void push(Pilha* p, int valor) {
+    if (p->topo == MAX - 1) {
+        printf("Erro: pilha cheia!\n");
+        exit(1);
+    }
+    p->dados[++p->topo] = valor;
+}
+
+int pop(Pilha* p) {
+    if (esta_vazia(p)) {
+        printf("Erro: pilha vazia!\n");
+        exit(1);
+    }
+    return p->dados[p->topo--];
+}
+
+typedef struct {
+    Pilha pilha_entrada;
+    Pilha pilha_saida;
+} Fila;
+
+void inicializar_fila(Fila* f) {
+    inicializar(&f->pilha_entrada);
+    inicializar(&f->pilha_saida);
+}
+
+void enfileirar(Fila* f, int valor) {
+    push(&f->pilha_entrada, valor);
+}
+
+int desenfileirar(Fila* f) {
+    if (esta_vazia(&f->pilha_saida)) {
+        while (!esta_vazia(&f->pilha_entrada)) {
+            push(&f->pilha_saida, pop(&f->pilha_entrada));
+        }
+    }
+    if (esta_vazia(&f->pilha_saida)) {
+        printf("Erro: fila vazia!\n");
+        exit(1);
+    }
+    return pop(&f->pilha_saida);
+}
+
+int frente(Fila* f) {
+    if (esta_vazia(&f->pilha_saida)) {
+        while (!esta_vazia(&f->pilha_entrada)) {
+            push(&f->pilha_saida, pop(&f->pilha_entrada));
+        }
+    }
+    if (esta_vazia(&f->pilha_saida)) {
+        printf("Erro: fila vazia!\n");
+        exit(1);
+    }
+    return f->pilha_saida.dados[f->pilha_saida.topo];
+}
+
+int main() {
+    Fila fila;
+    inicializar_fila(&fila);
+
+    enfileirar(&fila, 10);
+    enfileirar(&fila, 20);
+    enfileirar(&fila, 30);
+
+    printf("Frente: %d\n", frente(&fila));
+    printf("Desenfileirar: %d\n", desenfileirar(&fila));
+    printf("Desenfileirar: %d\n", desenfileirar(&fila));
+
+    enfileirar(&fila, 40);
+
+    printf("Frente: %d\n", frente(&fila));
+    printf("Desenfileirar: %d\n", desenfileirar(&fila));
+    printf("Desenfileirar: %d\n", desenfileirar(&fila));
+
+    return 0;
+}
