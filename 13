@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 1000
+
+struct Pilha {
+    char itens[MAX];
+    int topo;
+};
+
+void inicializar(struct Pilha* p) {
+    p->topo = -1;
+}
+
+int esta_vazia(struct Pilha* p) {
+    return p->topo == -1;
+}
+
+void push(struct Pilha* p, char c) {
+    p->itens[++(p->topo)] = c;
+}
+
+char pop(struct Pilha* p) {
+    return p->itens[(p->topo)--];
+}
+
+int verificar_palindromo(const char* str) {
+    struct Pilha p;
+    inicializar(&p);
+
+    int len = strlen(str);
+
+    for (int i = 0; i < len; i++) {
+        push(&p, str[i]);
+    }
+
+    for (int i = 0; i < len; i++) {
+        if (str[i] != pop(&p)) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+int main() {
+    const char* testes[] = {
+        "radar",
+        "level",
+        "hello",
+        "ana",
+        "12321",
+        "teste"
+    };
+
+    for (int i = 0; i < sizeof(testes)/sizeof(testes[0]); i++) {
+        printf("'%s' -> %s\n", testes[i],
+            verificar_palindromo(testes[i]) ? "Palíndromo" : "Não é palíndromo");
+    }
+
+    return 0;
+}
