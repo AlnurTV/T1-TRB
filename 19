@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int dado;
+    struct No* proximo;
+};
+
+void inserir(struct No** cabeca, int valor) {
+    struct No* novo_no = (struct No*)malloc(sizeof(struct No));
+    novo_no->dado = valor;
+    novo_no->proximo = *cabeca;
+    *cabeca = novo_no;
+}
+
+int detectar_ciclo(struct No* cabeca) {
+    struct No* lento = cabeca;
+    struct No* rapido = cabeca;
+
+    while (rapido != NULL && rapido->proximo != NULL) {
+        lento = lento->proximo;
+        rapido = rapido->proximo->proximo;
+
+        if (lento == rapido) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int main() {
+    struct No* cabeca = NULL;
+
+    inserir(&cabeca, 10);
+    inserir(&cabeca, 20);
+    inserir(&cabeca, 30);
+    inserir(&cabeca, 40);
+
+    // Criando um ciclo para teste: apontando o próximo do último nó para um nó existente
+    cabeca->proximo->proximo->proximo->proximo = cabeca->proximo; // 40->30->20->10->30
+
+    if (detectar_ciclo(cabeca)) {
+        printf("Ciclo detectado na lista.\n");
+    } else {
+        printf("Nenhum ciclo detectado.\n");
+    }
+
+    return 0;
+}
